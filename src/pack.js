@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import {
   cpSync,
   existsSync,
@@ -10,6 +10,7 @@ import {
 } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createPayload } from "./payload.js";
 
 const bootstrapPath = fileURLToPath(new URL("./bootstrap.cjs", import.meta.url));
 
@@ -69,12 +70,10 @@ export function pack({
 
   const workDir = join(distDir, "sea");
   mkdirSync(workDir, { recursive: true });
-  const payloadPath = join(workDir, "standalone.tar.gz");
+  const payloadPath = join(workDir, "standalone.payload.gz");
   const serverPathFile = join(workDir, "server-path.txt");
   rmSync(payloadPath, { force: true });
-  execFileSync("tar", ["-czf", payloadPath, "-C", standaloneDir, "."], {
-    stdio: "inherit",
-  });
+  writeFileSync(payloadPath, createPayload(standaloneDir));
   writeFileSync(serverPathFile, relative(standaloneDir, join(serverDir, "server.js")));
 
   const outputPath = output
@@ -94,7 +93,7 @@ export function pack({
         useCodeCache: false,
         useSnapshot: false,
         assets: {
-          "standalone.tar.gz": payloadPath,
+          "standalone.payload.gz": payloadPath,
           "server-path.txt": serverPathFile,
         },
       },

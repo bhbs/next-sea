@@ -12,7 +12,6 @@ next build
 
 - Node.js >= 26.0.0
 - Next.js >= 16.2.0
-- `tar` on the build and target machines
 
 ## Installation
 
@@ -75,9 +74,9 @@ OS, architecture, C library, and Node ABI.
    standalone tree.
 3. Before the build process exits, the adapter copies `public/` and
    `.next/static/` into the standalone tree.
-4. The adapter archives the complete standalone server, including traced
+4. The adapter packs the complete standalone server, including traced
    `node_modules`.
-5. Node.js 26 embeds the archive and a small bootstrap script into a SEA.
+5. Node.js 26 embeds the compressed payload and a small bootstrap script into a SEA.
 6. On first run, the executable extracts the payload into a content-addressed
    cache and starts the unmodified standalone `server.js`.
 
