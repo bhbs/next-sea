@@ -65,7 +65,8 @@ next build
 
 The generated SEA disables V8 code cache and snapshots so that the build host
 and target platform may differ. Native addons still need to match the target
-OS, architecture, C library, and Node ABI.
+OS, architecture, C library, and Node ABI. The target Node.js binary is copied
+into the SEA; it does not need to be executable on the build host.
 
 ## How It Works
 

@@ -15,7 +15,7 @@ import { join } from "node:path";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { gunzipSync } from "node:zlib";
-import { pack } from "../src/pack.js";
+import { isMachOExecutable, pack } from "../src/pack.js";
 
 const MAGIC = Buffer.from("NEXTSEA1");
 
@@ -102,6 +102,21 @@ test("pack rejects projects without standalone output", () => {
     assert.throws(() => pack({ projectDir: root, prepareOnly: true }), {
       message: /No standalone output found/,
     });
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("Mach-O detection distinguishes macOS and Linux target binaries", () => {
+  const root = mkdtempSync(join(tmpdir(), "next-sea-test-"));
+  const machO = join(root, "node-macos");
+  const elf = join(root, "node-linux");
+  writeFileSync(machO, Buffer.from("cffaedfe", "hex"));
+  writeFileSync(elf, Buffer.from("7f454c46", "hex"));
+
+  try {
+    assert.equal(isMachOExecutable(machO), true);
+    assert.equal(isMachOExecutable(elf), false);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

@@ -1,8 +1,11 @@
 import { spawnSync } from "node:child_process";
 import {
   cpSync,
+  closeSync,
   existsSync,
   mkdirSync,
+  openSync,
+  readSync,
   readdirSync,
   rmSync,
   statSync,
@@ -50,6 +53,27 @@ function run(command, args, options = {}) {
   }
 }
 
+export function isMachOExecutable(path) {
+  const buffer = Buffer.alloc(4);
+  const fd = openSync(path, "r");
+  try {
+    if (readSync(fd, buffer, 0, buffer.length, 0) !== buffer.length) return false;
+  } finally {
+    closeSync(fd);
+  }
+
+  return [
+    "feedface",
+    "cefaedfe",
+    "feedfacf",
+    "cffaedfe",
+    "cafebabe",
+    "bebafeca",
+    "cafebabf",
+    "bfbafeca",
+  ].includes(buffer.toString("hex"));
+}
+
 export function pack({
   projectDir = process.cwd(),
   distDir = join(projectDir, ".next"),
@@ -59,6 +83,7 @@ export function pack({
 } = {}) {
   projectDir = resolve(projectDir);
   distDir = resolve(distDir);
+  const targetNodePath = resolve(nodeBinary);
   const standaloneDir = join(distDir, "standalone");
   if (!existsSync(standaloneDir)) {
     throw new Error('next-sea: No standalone output found. Run "next-sea build" first.');
@@ -87,7 +112,7 @@ export function pack({
     JSON.stringify(
       {
         main: bootstrapPath,
-        executable: resolve(nodeBinary),
+        executable: targetNodePath,
         output: outputPath,
         disableExperimentalSEAWarning: true,
         useCodeCache: false,
@@ -108,8 +133,8 @@ export function pack({
   }
 
   console.log(`next-sea: Building ${outputPath}`);
-  run(nodeBinary, ["--build-sea", configPath]);
-  if (process.platform === "darwin") {
+  run(process.execPath, ["--build-sea", configPath]);
+  if (process.platform === "darwin" && isMachOExecutable(targetNodePath)) {
     run("codesign", ["--sign", "-", outputPath]);
   }
   console.log(`next-sea: Done -> ${outputPath}`);
