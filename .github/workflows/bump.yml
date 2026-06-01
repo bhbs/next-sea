@@ -1,0 +1,32 @@
+name: Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      semver:
+        type: choice
+        required: true
+        description: version
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26.2.0
+          package-manager-cache: false
+      - run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          npm version ${{ github.event.inputs.semver }}
+          git push origin $(git tag --points-at HEAD)
+          git push origin main

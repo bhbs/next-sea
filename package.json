@@ -1,0 +1,47 @@
+{
+  "name": "next-sea",
+  "version": "0.0.1",
+  "description": "Package a Next.js standalone build as a Node.js Single Executable Application",
+  "author": "bhbs <bhbstar.me@gmail.com>",
+  "type": "module",
+  "homepage": "https://github.com/bhbs/next-sea",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhbs/next-sea.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bhbs/next-sea/issues"
+  },
+  "exports": {
+    ".": "./src/adapter.js"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "typecheck": "node --check src/pack.js && node --check src/adapter.js && node --check src/bootstrap.cjs"
+  },
+  "keywords": [
+    "nextjs",
+    "node",
+    "sea",
+    "standalone",
+    "executable"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=26.0.0"
+  },
+  "peerDependencies": {
+    "next": ">=16.2.0"
+  },
+  "devDependencies": {
+    "next": "^16.2.6",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  }
+}
