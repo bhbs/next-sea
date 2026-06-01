@@ -1,6 +1,6 @@
 {
   "name": "next-sea",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Package a Next.js standalone build as a Node.js Single Executable Application",
   "author": "bhbs <bhbstar.me@gmail.com>",
   "type": "module",
